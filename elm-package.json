@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0",
+    "version": "1.0.0",
     "summary": "A tiny module for easily building an HTTP-server with Elm",
     "repository": "https://github.com/opvasger/elm-http-server.git",
     "license": "BSD3",
@@ -8,8 +8,7 @@
     ],
     "exposed-modules": [ "Server" ],
     "dependencies": {
-        "elm-lang/core": "5.1.1 <= v < 6.0.0",
-        "elm-lang/http": "1.0.0 <= v < 2.0.0"
+        "elm-lang/core": "5.1.1 <= v < 6.0.0"
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }
