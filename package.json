@@ -4,8 +4,7 @@
   "description": "A tiny module for easily building an HTTP-server with Elm",
   "main": "source/index.js",
   "scripts": {
-    "example:build": "elm-make example/Main.elm --output build/main.elm.js && cp example/main.js build/main.js",
-    "example:start": "node build/main.js"
+    "example": "elm-make example/source/Main.elm --output build/main.elm.js && cp example/source/main.js build/main.js && node build/main.js"
   },
   "keywords": ["elm", "node", "http", "universal", "server"],
   "author": "asger nielsen <opvasger@gmail.com>",
