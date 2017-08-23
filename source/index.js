@@ -1,6 +1,10 @@
 global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 
-var createRequestListener = function (ports) {
+var createRequestListener = function (worker) {
+
+    if(!worker || !worker.ports || !worker.ports.outgoing || !worker.ports.incoming)
+        throw Error("invalid Elm module. Make sure 'createRequestListener' is supplied with a valid Elm-module which utilizies 'Server.Request' and 'Server.Response'.")
+
      return function (request, response) {
         var body = []
 
@@ -8,14 +12,14 @@ var createRequestListener = function (ports) {
         .on("data", function (chunk) { body.push(chunk) })
         .on("end", function () {
 
-            ports.outgoing.subscribe(function (output) {
+            worker.ports.outgoing.subscribe(function (output) {
 
                 response.writeHead(output.status.code, output.status.message, output.headers)
                 
                 response.end(output.body)
             })
 
-            ports.incoming.send({
+            worker.ports.incoming.send({
                 url:        request.url,
                 method:     request.method,
                 headers:    request.headers,

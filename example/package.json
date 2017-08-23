@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "an example of using elm-http-server",
+  "scripts": {
+      "start": "rm -rf build && mkdir build && cp source/index.js build/index.js && elm-make source/Main.elm --output build/elm.js && node build/index.js"
+  },
+  "keywords": [],
+  "author": "asger nielsen <opvasger@gmail.com",
+  "license": "BSD3"
+}

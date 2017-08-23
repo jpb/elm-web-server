@@ -1,52 +1,57 @@
 module Main exposing (main)
 
-import Dict exposing (Dict)
-import Json.Decode as Decode
 import Platform
-import Server.Http exposing (Request)
+import Server.Request as Request exposing (Request)
+import Server.Response as Response exposing (Response)
+import Server.Response.Header as Header
+import Server.Response.Status as Status
 
 
-type Msg
-    = NewRequest (Request Decode.Value)
-    | FailedRequest String
+type Msg a
+    = ValidRequest (Request a)
+    | InvalidRequest String
 
 
 init =
-    (,) () Cmd.none
+    (,) 0 Cmd.none
+
+
+countResponse : Int -> Response
+countResponse count =
+    Response.from
+        Status.ok
+        [ Header.htmlContent ]
+        (Just ("<pre>" ++ toString count ++ " requests before you :)</pre>"))
+
+
+errorResponse : String -> Response
+errorResponse message =
+    Response.from
+        Status.badRequest
+        [ Header.htmlContent ]
+        (Just ("<pre>" ++ message ++ "</pre>"))
 
 
 update msg model =
     case msg of
-        NewRequest request ->
-            ( model
-            , Server.Http.respond
-                { body = Just "<h1>Served by yours truely @elm-http-server</h1>"
-                , headers = Dict.fromList [ ( "content-type", "text/html" ) ]
-                , status = { code = 200, message = "ok" }
-                }
-            )
+        ValidRequest request ->
+            ( model + 1, (Response.send << countResponse) model )
 
-        FailedRequest message ->
-            ( model
-            , Server.Http.respond
-                { body = Nothing
-                , headers = Dict.empty
-                , status = { code = 500, message = message }
-                }
-            )
+        InvalidRequest message ->
+            ( model, (Response.send << errorResponse) message )
 
 
 onRequest result =
     case result of
         Ok request ->
-            NewRequest request
+            ValidRequest request
 
         Err message ->
-            FailedRequest message
+            InvalidRequest message
 
 
 subscriptions model =
-    Server.Http.listen onRequest
+    Request.listen onRequest
 
 
 main =

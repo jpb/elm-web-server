@@ -1,11 +1,9 @@
 {
   "name": "elm-http-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A tiny module for easily building an HTTP-server with Elm",
   "main": "source/index.js",
-  "scripts": {
-    "example": "elm-make example/source/Main.elm --output build/main.elm.js && cp example/source/main.js build/main.js && node build/main.js"
-  },
+  "scripts": {},
   "keywords": [
     "elm",
     "node",
