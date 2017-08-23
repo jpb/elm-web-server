@@ -2,7 +2,6 @@ module Main exposing (main)
 
 import Dict exposing (Dict)
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Platform
 import Server.Http exposing (Request)
 
@@ -21,7 +20,7 @@ update msg model =
         NewRequest request ->
             ( model
             , Server.Http.respond
-                { body = Encode.string "<h1>Served by yours truely @elm-http-server</h1>"
+                { body = Just "<h1>Served by yours truely @elm-http-server</h1>"
                 , headers = Dict.fromList [ ( "content-type", "text/html" ) ]
                 , status = { code = 200, message = "ok" }
                 }
@@ -30,7 +29,7 @@ update msg model =
         FailedRequest message ->
             ( model
             , Server.Http.respond
-                { body = Encode.null
+                { body = Nothing
                 , headers = Dict.empty
                 , status = { code = 500, message = message }
                 }

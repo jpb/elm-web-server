@@ -4,7 +4,8 @@
     "repository": "https://github.com/opvasger/elm-http-server.git",
     "license": "BSD3",
     "source-directories": [
-        "source"
+        "source",
+        "../source"
     ],
     "exposed-modules": [],
     "dependencies": {

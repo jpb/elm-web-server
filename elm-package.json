@@ -1,5 +1,5 @@
 {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "summary": "A tiny module for easily building an HTTP-server with Elm",
     "repository": "https://github.com/opvasger/elm-http-server.git",
     "license": "BSD3",

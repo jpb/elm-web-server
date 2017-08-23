@@ -26,10 +26,10 @@ type alias ResponseStatus =
     }
 
 
-type alias Response a =
+type alias Response =
     { status : ResponseStatus
     , headers : Dict String String
-    , body : a
+    , body : Maybe String
     }
 
 
@@ -53,7 +53,7 @@ encodeHeaders =
     Encode.object << (List.map << Tuple.mapSecond) Encode.string << Dict.toList
 
 
-encodeResponse : Response Encode.Value -> Encode.Value
+encodeResponse : Response -> Encode.Value
 encodeResponse { status, headers, body } =
     Encode.object
         [ ( "status"
@@ -63,11 +63,11 @@ encodeResponse { status, headers, body } =
                 ]
           )
         , ( "headers", encodeHeaders headers )
-        , ( "body", body )
+        , ( "body", (Maybe.withDefault Encode.null << Maybe.map Encode.string) body )
         ]
 
 
-respond : Response Encode.Value -> Cmd msg
+respond : Response -> Cmd msg
 respond response =
     (outgoing << encodeResponse) response
 
