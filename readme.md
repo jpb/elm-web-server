@@ -59,9 +59,9 @@ There is a couple of tiny modules for Elm written to facilitate some basic serve
     , url : String
     , body : Maybe a
     }  
-##    
+###  
     listen : (Result String (Request Decode.Value) -> msg) -> Sub msg
-##
+###
     decoder : Decoder a -> Decoder (Request a)
 
 ### Server.Response
@@ -70,20 +70,20 @@ There is a couple of tiny modules for Elm written to facilitate some basic serve
     , headers : Dict String String
     , body : Maybe String
     }
-##
+###
     from : Status -> List Header -> Maybe String -> Response
-##
+###
     send : Response -> Cmd msg
 
 ### Server.Response.Header
     type alias Header = ( String, String )
-##
+###
     contentType : String -> Header
-##
+###
     textContent : Header
-##
+###
     htmlContent : Header
-##
+###
     jsonContent : Header
 
 ### Server.Response.Status
@@ -91,13 +91,13 @@ There is a couple of tiny modules for Elm written to facilitate some basic serve
     { code : Int
     , message : String
     }
-##
+###
     ok : Status
-##
+###
     badRequest : Status
-##
+###
     unauthorized : Status
-##
+###
     notFound : Status
-##
+###
     internalError : Status
