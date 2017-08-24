@@ -28,7 +28,7 @@ An example of using the module can be found in the [universal-elm repository](ht
 ## Warning
 Elm and it's architecture is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can easily be applied to client, server and shared logic.
 
-## Node.js JavaScript API
+## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js`, the API can be used as such:
 
     var EHS = require("elm-http-server")
@@ -49,7 +49,7 @@ in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js`, the A
 
 Importing `elm-http-server` automatically exposes `XmlHttpRequest` globally to enable usage of `elm-lang/http` in the Elm-modules on the server.
 
-## Elm Api
+## Elm Interface
 There is a couple of tiny modules for Elm written to facilitate some basic server-logic
 
 ### Server.Request
