@@ -30,13 +30,13 @@ Elm and it's architecture is based on browser-applications for now, which leaves
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
 
-    var EHS = require("elm-http-server")
+    var Ehs = require("elm-http-server")
     var Http = require("http")
-    var Elm = require("./main.elm.js")
+    var App = require("./main.elm.js")
     
     var PORT = 3000
 
-    var onRequest = EHS.createRequestListener(ELm.Main.worker())
+    var onRequest = Ehs.createRequestListener(App.Main.worker())
     
     var onStart = function () {
         console.log("server started at http://localhost:" + PORT)
