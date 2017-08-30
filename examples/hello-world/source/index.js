@@ -1,10 +1,10 @@
 var Http = require("http")
-var EHS = require("../../source/index.js")
+var Ehs = require("elm-http-server")
 var App = require("./elm.js")
 
 var PORT = 3000
 
-var onRequest = EHS.createRequestListener(App.Main.worker())
+var onRequest = Ehs.createRequestListener(App.Main.worker())
 
 var onListen = function () { console.log("listening at http://localhost:" + PORT) }
 

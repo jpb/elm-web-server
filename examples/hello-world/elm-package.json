@@ -5,7 +5,7 @@
     "license": "BSD3",
     "source-directories": [
         "source",
-        "../source"
+        "node_modules/elm-http-server/source"
     ],
     "exposed-modules": [],
     "dependencies": {

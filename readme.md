@@ -17,8 +17,7 @@ Go to `elm-package.json` and expose the internal Elm-code from the module:
         ...
     }
 
-
-An example of using the module can be found in the [universal-elm repository](https://github.com/opvasger/universal-elm). It features a small setup using [Webpack](https://webpack.js.org/).
+Examples of usage can be found in the `examples` sub-directory.
 
 ## Features
 - Utility-modules for working with Http-Request/Response on the server

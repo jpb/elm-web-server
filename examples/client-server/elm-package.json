@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "summary": "An example of sharing elm code between client and server",
+    "repository": "https://github.com/opvasger/elm-http-server.git",
+    "license": "BSD3",
+    "source-directories": [
+        "source",
+        "node_modules/elm-http-server/source"
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "elm-lang/core": "5.1.1 <= v < 6.0.0",
+        "elm-lang/html": "2.0.0 <= v < 3.0.0"
+    },
+    "elm-version": "0.18.0 <= v < 0.19.0"
+}

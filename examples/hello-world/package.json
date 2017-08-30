@@ -1,0 +1,16 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "An example of using elm-http-server",
+  "scripts": {
+    "start": "node build/index.js",
+    "build": "cp source/index.js build/index.js && elm-make source/Main.elm --output build/elm.js",
+    "setup": "rm -rf build elm-stuff node_modules && npm i -y && elm-package install -y && mkdir build && npm run build"
+  },
+  "keywords": [],
+  "author": "asger nielsen <opvasger@gmail.com",
+  "license": "BSD3",
+  "dependencies": {
+    "elm-http-server": "2.1.0"
+  }
+}

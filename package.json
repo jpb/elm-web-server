@@ -1,6 +1,6 @@
 {
   "name": "elm-http-server",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A tiny module for easily building an HTTP-server with Elm",
   "main": "source/index.js",
   "scripts": {},
@@ -8,12 +8,11 @@
     "elm",
     "node",
     "http",
-    "universal",
     "server"
   ],
   "author": "asger nielsen <opvasger@gmail.com>",
   "license": "BSD3",
   "dependencies": {
-    "xhr2": "^0.1.4"
+    "xhr2": "0.1.4"
   }
 }
