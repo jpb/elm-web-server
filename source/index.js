@@ -2,8 +2,14 @@ global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 
 var createRequestListener = function (worker) {
 
-    if(!worker || !worker.ports || !worker.ports.outgoing || !worker.ports.incoming)
-        throw Error("invalid Elm module. Make sure 'createRequestListener' is supplied with a valid Elm-module which utilizies 'Server.Request' and 'Server.Response'.")
+    if(!worker || !worker.ports)
+        throw Error("Invalid Elm module. Ensure you are passing an instantiated Elm-worker to 'createRequestListener'.")
+
+    if(!worker.ports.incoming)
+        throw Error("Invalid Elm module. Ensure the worker you are passing to 'createRequestListener' is utilizing the Request-module.")
+
+    if(!worker.ports.outgoing)
+        throw Error("Invalid Elm module. Ensure the worker you are passing to 'createRequestListener' is utilizing the Response-module.")
 
      return function (request, response) {
         var body = []

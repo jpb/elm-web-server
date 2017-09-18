@@ -1,10 +1,10 @@
 port module Server.Request exposing (Request, listen)
 
 import Dict exposing (Dict)
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as D exposing (Decoder)
 
 
-port incoming : (Decode.Value -> msg) -> Sub msg
+port incoming : (D.Value -> msg) -> Sub msg
 
 
 type alias Request =
@@ -17,14 +17,14 @@ type alias Request =
 
 decoder : Decoder Request
 decoder =
-    Decode.map4
+    D.map4
         Request
-        (Decode.field "method" Decode.string)
-        (Decode.field "headers" (Decode.map Dict.fromList (Decode.keyValuePairs Decode.string)))
-        (Decode.field "url" Decode.string)
-        (Decode.field "body" (Decode.maybe Decode.string))
+        (D.field "method" D.string)
+        (D.field "headers" (D.map Dict.fromList (D.keyValuePairs D.string)))
+        (D.field "url" D.string)
+        (D.field "body" (D.maybe D.string))
 
 
 listen : (Result String Request -> msg) -> Sub msg
 listen msg =
-    incoming (msg << Decode.decodeValue decoder)
+    incoming (msg << D.decodeValue decoder)
