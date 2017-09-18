@@ -1,12 +1,11 @@
 module Server.Main exposing (main)
 
-import Json.Decode as Decode
 import Platform
 import Server.Request as Request exposing (Request)
 import Server.Response as Response exposing (Response)
-import Server.Response.Header as Header
 import Server.Response.Status as Status
 import Shared
+import Server.Html as Html
 
 
 type alias Flags =
@@ -17,34 +16,18 @@ type alias Flags =
 
 
 type alias Model =
-    { client : String
+    { client : Html.Document
     }
 
 
 type Msg
-    = NewRequest (Request Decode.Value)
+    = NewRequest Request
     | BadRequest String
-
-
-toDocument : String -> String -> String
-toDocument title script =
-    """
-        <!doctype html>
-            <html lang="en">
-                <head>
-                    <meta charset="utf-8">
-                    <title>""" ++ title ++ """</title>
-                </head>
-                <body>
-                    <script>""" ++ script ++ """</script>
-                </body>
-            </html>
-    """
 
 
 init : Flags -> ( Model, Cmd Msg )
 init { client } =
-    ( { client = toDocument Shared.text client.script }
+    ( { client = Html.document Shared.text client.script }
     , Cmd.none
     )
 
@@ -54,16 +37,16 @@ update msg model =
     case msg of
         NewRequest request ->
             ( model
-            , Response.send (Response.from Status.ok [ Header.htmlContent ] (Just model.client))
+            , Response.send (Response.html Status.ok model.client)
             )
 
         BadRequest reason ->
             ( model
-            , Response.send (Response.from Status.badRequest [ Header.textContent ] (Just reason))
+            , Response.send (Response.text Status.badRequest reason)
             )
 
 
-onRequest : Result String (Request Decode.Value) -> Msg
+onRequest : Result String Request -> Msg
 onRequest result =
     case result of
         Ok request ->
