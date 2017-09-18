@@ -3,7 +3,6 @@ module Main exposing (main)
 import Platform
 import Server.Request as Request exposing (Request)
 import Server.Response as Response exposing (Response)
-import Server.Response.Header as Header
 import Server.Response.Status as Status
 
 
@@ -12,10 +11,7 @@ init =
 
 
 helloResponse =
-    Response.from
-        Status.ok
-        [ Header.textContent ]
-        (Just "Hello World")
+    Response.text Status.ok "Hello World"
 
 
 update _ _ =

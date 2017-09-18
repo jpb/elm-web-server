@@ -9,8 +9,8 @@
   },
   "keywords": [],
   "author": "asger nielsen <opvasger@gmail.com",
-  "license": "BSD3",
+  "license": "BSD-3-Clause",
   "dependencies": {
-    "elm-http-server": "2.1.0"
+    "elm-http-server": "4.0.0"
   }
 }
