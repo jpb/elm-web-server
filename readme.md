@@ -64,13 +64,6 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     decoder : Decoder Request
 
 ### Server.Response
-    type Response =
-        Response
-            { status : Status
-            , headers : Dict String String
-            , body : Maybe String
-            }
-###
     html : Status -> Server.Html.Document -> Response
 ###
     text : Status -> String -> Response
@@ -109,8 +102,6 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     internalError : Status
 
 ### Server.Html
-    type Document = Document String
-###
     document : String -> String -> Document
 ###
     toString : Document -> String
