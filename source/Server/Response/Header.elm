@@ -1,4 +1,4 @@
-module Server.Response.Header exposing (Header, jsContent, contentType, htmlContent, jsonContent, textContent)
+module Server.Response.Header exposing (Header, contentType, htmlContent, jsonContent, textContent)
 
 
 type alias Header =
@@ -23,8 +23,3 @@ htmlContent =
 jsonContent : Header
 jsonContent =
     contentType "application/json"
-
-
-jsContent : Header
-jsContent =
-    contentType "application/javascript"

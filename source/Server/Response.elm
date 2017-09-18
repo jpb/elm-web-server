@@ -1,28 +1,61 @@
-port module Server.Response exposing (Response, from, send)
+port module Server.Response exposing (Response, json, html, text, nothing, send)
 
 import Dict exposing (Dict)
 import Json.Encode as E
-import Server.Response.Header exposing (Header)
-import Server.Response.Status exposing (Status)
+import Server.Response.Header as Header exposing (Header)
+import Server.Response.Status as Status exposing (Status)
+import Server.Html as Html
 
 
 port outgoing : E.Value -> Cmd msg
 
 
-type alias Response =
-    { status : Status
-    , headers : Dict String String
-    , body : Maybe String
-    }
+type Response
+    = Response
+        { status : Status
+        , headers : Dict String String
+        , body : Maybe String
+        }
 
 
-from : Status -> List Header -> Maybe String -> Response
-from status headers body =
-    Response status (Dict.fromList headers) body
+html : Status -> Html.Document -> Response
+html status html =
+    Response
+        { status = status
+        , headers = Dict.fromList [ Header.htmlContent ]
+        , body = Just (Html.toString html)
+        }
+
+
+text : Status -> String -> Response
+text status text =
+    Response
+        { status = status
+        , headers = Dict.fromList [ Header.textContent ]
+        , body = Just text
+        }
+
+
+json : Status -> E.Value -> Response
+json status json =
+    Response
+        { status = status
+        , headers = Dict.fromList [ Header.jsonContent ]
+        , body = Just (E.encode 0 json)
+        }
+
+
+nothing : Status -> Response
+nothing status =
+    Response
+        { status = status
+        , headers = Dict.empty
+        , body = Nothing
+        }
 
 
 encode : Response -> E.Value
-encode { status, headers, body } =
+encode (Response { status, headers, body }) =
     E.object
         [ ( "status"
           , E.object

@@ -25,7 +25,7 @@ Examples of usage can be found in the `examples` sub-directory.
 - A tiny API to hook Elm's `Platform.program` into `Http.createServer` in Node.JS
 
 ## Warning
-Elm and it's architecture is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can easily be applied to client, server and shared logic.
+Elm and it's architecture is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can easily be applied to both client- & server-logic.
 
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
@@ -64,13 +64,20 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     decoder : Decoder Request
 
 ### Server.Response
-    type alias Response =
-    { status : Status
-    , headers : Dict String String
-    , body : Maybe String
-    }
+    type Response =
+        Response
+            { status : Status
+            , headers : Dict String String
+            , body : Maybe String
+            }
 ###
-    from : Status -> List Header -> Maybe String -> Response
+    html : Status -> Server.Html.Document -> Response
+###
+    text : Status -> String -> Response
+###
+    json : Status -> Json.Encode.Value -> Response
+###
+    nothing : Status -> Response
 ###
     send : Response -> Cmd msg
 
@@ -100,3 +107,10 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     notFound : Status
 ###
     internalError : Status
+
+### Server.Html
+    type Document = Document String
+###
+    document : String -> String -> Document
+###
+    toString : Document -> String
