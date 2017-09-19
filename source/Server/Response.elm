@@ -1,10 +1,10 @@
-port module Server.Response exposing (Response, json, html, text, nothing, send)
+port module Server.Response exposing (Response, html, json, nothing, send, text)
 
 import Dict exposing (Dict)
 import Json.Encode as E
+import Server.Html as Html
 import Server.Response.Header as Header exposing (Header)
 import Server.Response.Status as Status exposing (Status)
-import Server.Html as Html
 
 
 port outgoing : E.Value -> Cmd msg
