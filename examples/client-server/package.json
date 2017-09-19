@@ -12,9 +12,9 @@
   "author": "asger nielsen <opvasger@gmail.com>",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "elm-http-server": "5.0.0",
     "elm-webpack-loader": "4.3.1",
-    "nodemon": "1.11.0",
-    "webpack": "2.6.1",
-    "elm-http-server": "4.0.0"
+    "nodemon": "1.12.1",
+    "webpack": "3.6.0"
   }
 }
