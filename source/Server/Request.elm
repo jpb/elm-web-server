@@ -1,4 +1,4 @@
-port module Server.Request exposing (Method, Request, listen)
+port module Server.Request exposing (Method(..), Request, listen)
 
 import Dict exposing (Dict)
 import Json.Decode as D exposing (Decoder)
