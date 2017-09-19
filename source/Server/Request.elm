@@ -34,24 +34,24 @@ toMethod text =
             Other text
 
 
-type alias Request route =
+type alias Request =
     { method : Method
     , headers : Dict String String
-    , route : route
+    , url : String
     , body : Maybe String
     }
 
 
-decoder : (String -> route) -> Decoder (Request route)
-decoder toRoute =
+decoder : Decoder Request
+decoder =
     D.map4
         Request
         (D.field "method" (D.map toMethod D.string))
         (D.field "headers" (D.map Dict.fromList (D.keyValuePairs D.string)))
-        (D.field "url" (D.map toRoute D.string))
+        (D.field "url" (D.string))
         (D.field "body" (D.maybe D.string))
 
 
-listen : (String -> route) -> (Result String (Request route) -> msg) -> Sub msg
-listen toRoute msg =
-    incoming (msg << D.decodeValue (decoder toRoute))
+listen : (Result String Request -> msg) -> Sub msg
+listen msg =
+    incoming (msg << D.decodeValue decoder)

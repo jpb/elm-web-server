@@ -26,21 +26,8 @@ type Route
     | NotFound String
 
 
-toRoute : String -> Route
-toRoute url =
-    case url of
-        "/" ->
-            Client
-
-        "/data" ->
-            Data
-
-        _ ->
-            NotFound url
-
-
 type Msg
-    = NewRequest (Request Route)
+    = NewRequest Request
     | BadRequest String
 
 
@@ -55,18 +42,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NewRequest request ->
-            case request.route of
-                Client ->
+            case request.url of
+                "/" ->
                     ( model
                     , Response.send (Response.html Status.ok model.client)
                     )
 
-                Data ->
+                "/data" ->
                     ( model
                     , Response.send (Response.text Status.ok "some data")
                     )
 
-                NotFound url ->
+                url ->
                     ( model, Response.send (Response.text Status.notFound ("404 - no route found for '" ++ url ++ "'")) )
 
         BadRequest reason ->
@@ -77,7 +64,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Request.listen toRoute
+    Request.listen
         (\result ->
             case result of
                 Ok request ->
