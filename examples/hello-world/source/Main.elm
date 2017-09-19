@@ -19,7 +19,7 @@ update _ _ =
 
 
 subscriptions _ =
-    Request.listen (always ())
+    Request.listen identity (always ())
 
 
 main =
