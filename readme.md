@@ -25,7 +25,7 @@ Examples of usage can be found in the `examples` sub-directory.
 - A tiny API to hook Elm's `Platform.program` into `Http.createServer` in Node.JS
 
 ## Warning
-Elm and it's architecture is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can easily be applied to both client- & server-logic.
+Elm (along with the Elm architecture) is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can more easily be applied to server-logic.
 
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
