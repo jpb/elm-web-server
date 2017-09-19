@@ -68,7 +68,7 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
 ###
     listen : (String -> route) -> (Result String (Request route) -> msg) -> Sub msg
 ###
-    decoder : (String -> route) -> Decoder (Request Route)
+    decoder : (String -> route) -> Decoder (Request route)
 
 ### Server.Response
     html : Status -> Server.Html.Document -> Response
