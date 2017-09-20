@@ -20,12 +20,6 @@ type alias Model =
     }
 
 
-type Route
-    = Client
-    | Data
-    | NotFound String
-
-
 type Msg
     = NewRequest Request
     | BadRequest String
