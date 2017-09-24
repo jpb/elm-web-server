@@ -52,10 +52,10 @@ Importing `elm-http-server` automatically exposes `XmlHttpRequest` globally to e
 There is a couple of tiny modules for Elm, written to facilitate some basic server-logic.
 
 ### Server.Request
-    type alias Request route =
+    type alias Request =
     { method : Method
     , headers : Dict String String
-    , route : route
+    , url : String
     , body : Maybe String
     }
 ###
@@ -66,9 +66,7 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
         | Delete
         | Other String
 ###
-    listen : (String -> route) -> (Result String (Request route) -> msg) -> Sub msg
-###
-    decoder : (String -> route) -> Decoder (Request route)
+    listen : (Result String Request -> msg) -> Sub msg
 
 ### Server.Response
     html : Status -> Server.Html.Document -> Response
@@ -77,7 +75,7 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
 ###
     json : Status -> Json.Encode.Value -> Response
 ###
-    nothing : Status -> Response
+    empty : Status -> Response
 ###
     send : Response -> Cmd msg
 

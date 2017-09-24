@@ -1,4 +1,4 @@
-port module Server.Response exposing (Response, html, json, nothing, send, text)
+port module Server.Response exposing (Response, html, json, empty, send, text)
 
 import Dict exposing (Dict)
 import Json.Encode as E
@@ -45,8 +45,8 @@ json status json =
         }
 
 
-nothing : Status -> Response
-nothing status =
+empty : Status -> Response
+empty status =
     Response
         { status = status
         , headers = Dict.empty
