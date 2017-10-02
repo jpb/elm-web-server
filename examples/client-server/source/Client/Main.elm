@@ -2,6 +2,7 @@ module Client.Main exposing (main)
 
 import Html exposing (Html)
 import Shared
+import Http
 
 
 type alias Model =
@@ -9,12 +10,27 @@ type alias Model =
 
 
 type Msg
-    = Msg
+    = Data (Result Http.Error String)
+
+
+someDataRequest : Http.Request String
+someDataRequest =
+    Http.getString "/some"
+
+
+otherDataRequest : Http.Request String
+otherDataRequest =
+    Http.getString "/other"
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( (), Cmd.none )
+    ( ()
+    , Cmd.batch
+        [ Http.send Data someDataRequest
+        , Http.send Data otherDataRequest
+        ]
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

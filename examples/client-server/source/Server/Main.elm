@@ -2,7 +2,7 @@ module Server.Main exposing (main)
 
 import Platform
 import Server.Html as Html
-import Server.Request as Request exposing (Request)
+import Server.Request as Request exposing (Request, Method(..))
 import Server.Response as Response exposing (Response)
 import Server.Response.Status as Status
 import Shared
@@ -21,8 +21,11 @@ type alias Model =
 
 
 type Msg
-    = NewRequest Request
-    | BadRequest String
+    = BadRequest
+    | GetClient String
+    | SomeData String
+    | OtherData String
+    | NotFound String String
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -32,28 +35,23 @@ init { client } =
     )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Cmd Msg
 update msg model =
     case msg of
-        NewRequest request ->
-            case request.url of
-                "/" ->
-                    ( model
-                    , Response.send (Response.html Status.ok model.client)
-                    )
+        BadRequest ->
+            Cmd.none
 
-                "/data" ->
-                    ( model
-                    , Response.send (Response.text Status.ok "some data")
-                    )
+        NotFound id url ->
+            Response.send (Response.text id Status.notFound ("no route found for '" ++ url ++ "'"))
 
-                url ->
-                    ( model, Response.send (Response.text Status.notFound ("404 - no route found for '" ++ url ++ "'")) )
+        GetClient id ->
+            Response.send (Response.html id Status.ok model.client)
 
-        BadRequest reason ->
-            ( model
-            , Response.send (Response.text Status.badRequest reason)
-            )
+        SomeData id ->
+            Response.send (Response.text id Status.ok "some data")
+
+        OtherData id ->
+            Response.send (Response.text id Status.ok "other data")
 
 
 subscriptions : Model -> Sub Msg
@@ -62,10 +60,21 @@ subscriptions model =
         (\result ->
             case result of
                 Ok request ->
-                    NewRequest request
+                    case request.url of
+                        "/" ->
+                            GetClient request.id
+
+                        "/some" ->
+                            SomeData request.id
+
+                        "/other" ->
+                            OtherData request.id
+
+                        _ ->
+                            NotFound request.id request.url
 
                 Err reason ->
-                    BadRequest reason
+                    BadRequest
         )
 
 
@@ -73,6 +82,6 @@ main : Program Flags Model Msg
 main =
     Platform.programWithFlags
         { init = init
-        , update = update
+        , update = \msg model -> ( model, update msg model )
         , subscriptions = subscriptions
         }

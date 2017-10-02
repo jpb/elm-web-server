@@ -1,7 +1,7 @@
 {
   "name": "elm-http-server",
-  "version": "8.0.0",
-  "description": "A tiny module for easily building an HTTP-server with Elm",
+  "version": "9.0.0",
+  "description": "A puny module for putting together HTTP-servers using Elm",
   "main": "source/index.js",
   "scripts": {},
   "keywords": [

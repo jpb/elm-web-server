@@ -12,52 +12,58 @@ port outgoing : E.Value -> Cmd msg
 
 type Response
     = Response
-        { status : Status
+        { id : String
+        , status : Status
         , headers : Dict String String
         , body : Maybe String
         }
 
 
-html : Status -> Html.Document -> Response
-html status html =
+html : String -> Status -> Html.Document -> Response
+html id status html =
     Response
-        { status = status
+        { id = id
+        , status = status
         , headers = Dict.fromList [ Header.htmlContent ]
         , body = Just (Html.toString html)
         }
 
 
-text : Status -> String -> Response
-text status text =
+text : String -> Status -> String -> Response
+text id status text =
     Response
-        { status = status
+        { id = id
+        , status = status
         , headers = Dict.fromList [ Header.textContent ]
         , body = Just text
         }
 
 
-json : Status -> E.Value -> Response
-json status json =
+json : String -> Status -> E.Value -> Response
+json id status json =
     Response
-        { status = status
+        { id = id
+        , status = status
         , headers = Dict.fromList [ Header.jsonContent ]
         , body = Just (E.encode 0 json)
         }
 
 
-empty : Status -> Response
-empty status =
+empty : String -> Status -> Response
+empty id status =
     Response
-        { status = status
+        { id = id
+        , status = status
         , headers = Dict.empty
         , body = Nothing
         }
 
 
 encode : Response -> E.Value
-encode (Response { status, headers, body }) =
+encode (Response { id, status, headers, body }) =
     E.object
-        [ ( "status"
+        [ ( "id", E.string id )
+        , ( "status"
           , E.object
                 [ ( "code", E.int status.code )
                 , ( "message", E.string status.message )

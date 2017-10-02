@@ -35,7 +35,8 @@ toMethod text =
 
 
 type alias Request =
-    { method : Method
+    { id : String
+    , method : Method
     , headers : Dict String String
     , url : String
     , body : Maybe String
@@ -44,8 +45,9 @@ type alias Request =
 
 decoder : Decoder Request
 decoder =
-    D.map4
+    D.map5
         Request
+        (D.field "id" D.string)
         (D.field "method" (D.map toMethod D.string))
         (D.field "headers" (D.map Dict.fromList (D.keyValuePairs D.string)))
         (D.field "url" (D.string))

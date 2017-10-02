@@ -1,5 +1,5 @@
 # Elm Http Server
-A tiny module for easily building an HTTP-server with Elm.
+A puny module for putting together HTTP-servers using Elm
 
 ## Usage
 The module is distributed through NPM:
@@ -25,7 +25,7 @@ Examples of usage can be found in the `examples` sub-directory.
 - A tiny API to hook Elm's `Platform.program` into `Http.createServer` in Node.JS
 
 ## Warning
-Elm (along with the Elm architecture) is based on browser-applications for now, which leaves a lot of open questions in terms of traditional server-application functionality. This, however, doesn't undercut a lot of the really nice properties of Elm, which with this module can more easily be applied to server-logic.
+Elm (along with the Elm architecture) is designed for browser-applications; This project in experimental attempt to embed the architecture inside a small Node.js Http-server program. Taking the unreasonable performance implications aside, it is fun to experience Elm as a shared language between client and server with all of it's nice properties for continuous improvement and modification. Enjoy! :)
 
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
@@ -36,7 +36,9 @@ in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the
     
     var PORT = 3000
 
-    var onRequest = Ehs.createRequestListener(App.Main.worker())
+    var ID_GEN_SIZE = 420
+
+    var onRequest = Ehs.createRequestListener(App.Main.worker(), ID_GEN_SIZE)
     
     var onStart = function () {
         console.log("server started at http://localhost:" + PORT)
@@ -53,7 +55,8 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
 
 ### Server.Request
     type alias Request =
-    { method : Method
+    { id : String
+    , method : Method
     , headers : Dict String String
     , url : String
     , body : Maybe String
@@ -69,13 +72,13 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     listen : (Result String Request -> msg) -> Sub msg
 
 ### Server.Response
-    html : Status -> Server.Html.Document -> Response
+    html : String -> Status -> Server.Html.Document -> Response
 ###
-    text : Status -> String -> Response
+    text : String -> Status -> String -> Response
 ###
-    json : Status -> Json.Encode.Value -> Response
+    json : String -> Status -> Json.Encode.Value -> Response
 ###
-    empty : Status -> Response
+    empty : String -> Status -> Response
 ###
     send : Response -> Cmd msg
 
