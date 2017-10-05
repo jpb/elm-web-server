@@ -2,7 +2,7 @@
 A puny module for putting together HTTP-servers using Elm
 
 ## Warning
-Elm (along with the Elm architecture) is designed for browser-applications; This project in experimental attempt to embed the architecture inside a small Node.js Http-server program. Taking the unreasonable performance implications aside, it is fun to experience Elm as a shared language between client and server with all of it's nice properties for continuous improvement and modification. Enjoy! :)
+Elm (along with the Elm architecture) is designed for browser-applications; This project in an experimental attempt to embed the architecture inside a small Node.js Http-server program. Taking the unreasonable performance implications aside, it is fun to experience Elm as a shared language between client and server with all of it's nice properties for continuous improvement and modification. Enjoy! :)
 
 ## Usage
 The module is distributed through NPM:
