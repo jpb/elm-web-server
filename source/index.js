@@ -5,16 +5,16 @@ global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 var createRequestListener = function (worker, size) {
 
     if (!size || typeof size !== "number")
-        throw Error("Invalid identifier-size. Ensure you have passed a valid buffer-size to generate IDs from to 'createRequestListener'.")
+        throw Error("Invalid configuration - Ensure you have passed an integer as the 2nd argument to 'createRequestListener'.")
 
     if (!worker || !worker.ports)
-        throw Error("Invalid Elm module. Ensure you are passing an instantiated Elm-worker to 'createRequestListener'.")
+        throw Error("Invalid configuration - Ensure you are passing an instantiated Elm-worker to 'createRequestListener'.")
 
     if (!worker.ports.incoming)
-        throw Error("Invalid Elm module. Ensure the worker you are passing to 'createRequestListener' is utilizing the Request-module.")
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Request-module.")
 
     if (!worker.ports.outgoing)
-        throw Error("Invalid Elm module. Ensure the worker you are passing to 'createRequestListener' is utilizing the Response-module.")
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Response-module.")
 
     var unresolved = {}
 
@@ -22,7 +22,7 @@ var createRequestListener = function (worker, size) {
 
         Crypto.randomBytes(size, function (error, buffer) {
 
-            var id = buffer.toString("hex")
+            var id = Date.now() + buffer.toString("hex")
 
             unresolved[id] = response
 

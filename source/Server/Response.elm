@@ -5,6 +5,7 @@ import Json.Encode as E
 import Server.Html as Html
 import Server.Response.Header as Header exposing (Header)
 import Server.Response.Status as Status exposing (Status)
+import Server.Request as Request
 
 
 port outgoing : E.Value -> Cmd msg
@@ -12,14 +13,14 @@ port outgoing : E.Value -> Cmd msg
 
 type Response
     = Response
-        { id : String
+        { id : Request.Id
         , status : Status
         , headers : Dict String String
         , body : Maybe String
         }
 
 
-html : String -> Status -> Html.Document -> Response
+html : Request.Id -> Status -> Html.Document -> Response
 html id status html =
     Response
         { id = id
@@ -29,7 +30,7 @@ html id status html =
         }
 
 
-text : String -> Status -> String -> Response
+text : Request.Id -> Status -> String -> Response
 text id status text =
     Response
         { id = id
@@ -39,7 +40,7 @@ text id status text =
         }
 
 
-json : String -> Status -> E.Value -> Response
+json : Request.Id -> Status -> E.Value -> Response
 json id status json =
     Response
         { id = id
@@ -49,7 +50,7 @@ json id status json =
         }
 
 
-empty : String -> Status -> Response
+empty : Request.Id -> Status -> Response
 empty id status =
     Response
         { id = id
@@ -62,7 +63,7 @@ empty id status =
 encode : Response -> E.Value
 encode (Response { id, status, headers, body }) =
     E.object
-        [ ( "id", E.string id )
+        [ ( "id", Request.encodeId id )
         , ( "status"
           , E.object
                 [ ( "code", E.int status.code )

@@ -1,10 +1,20 @@
-port module Server.Request exposing (Method(..), Request, listen)
+port module Server.Request exposing (Method(..), Id, encodeId, Request, listen)
 
 import Dict exposing (Dict)
 import Json.Decode as D exposing (Decoder)
+import Json.Encode as E
 
 
 port incoming : (D.Value -> msg) -> Sub msg
+
+
+type Id
+    = Id String
+
+
+encodeId : Id -> E.Value
+encodeId (Id value) =
+    E.string value
 
 
 type Method
@@ -35,7 +45,7 @@ toMethod text =
 
 
 type alias Request =
-    { id : String
+    { id : Id
     , method : Method
     , headers : Dict String String
     , url : String
@@ -47,7 +57,7 @@ decoder : Decoder Request
 decoder =
     D.map5
         Request
-        (D.field "id" D.string)
+        (D.field "id" (D.map Id D.string))
         (D.field "method" (D.map toMethod D.string))
         (D.field "headers" (D.map Dict.fromList (D.keyValuePairs D.string)))
         (D.field "url" (D.string))

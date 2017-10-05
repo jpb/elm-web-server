@@ -6,7 +6,7 @@ import Http
 
 
 type alias Model =
-    ()
+    String
 
 
 type Msg
@@ -25,7 +25,7 @@ otherDataRequest =
 
 init : ( Model, Cmd Msg )
 init =
-    ( ()
+    ( "loading"
     , Cmd.batch
         [ Http.send Data someDataRequest
         , Http.send Data otherDataRequest
@@ -35,7 +35,14 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( (), Cmd.none )
+    case msg of
+        Data result ->
+            case result of
+                Ok data ->
+                    ( data, Cmd.none )
+
+                Err error ->
+                    ( toString error, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -45,7 +52,10 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    Html.text Shared.text
+    Html.div []
+        [ Html.div [] [ Html.text Shared.text ]
+        , Html.div [] [ Html.text model ]
+        ]
 
 
 main : Program Never Model Msg

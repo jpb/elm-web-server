@@ -8,7 +8,7 @@ import Server.Response.Status as Status
 
 type Msg
     = BadRequest
-    | GoodRequest String
+    | GoodRequest Request.Id
 
 
 init =

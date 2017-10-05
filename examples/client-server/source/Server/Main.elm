@@ -6,6 +6,7 @@ import Server.Request as Request exposing (Request, Method(..))
 import Server.Response as Response exposing (Response)
 import Server.Response.Status as Status
 import Shared
+import Server.Request as Request
 
 
 type alias Flags =
@@ -22,10 +23,10 @@ type alias Model =
 
 type Msg
     = BadRequest
-    | GetClient String
-    | SomeData String
-    | OtherData String
-    | NotFound String String
+    | GetClient Request.Id
+    | SomeData Request.Id
+    | OtherData Request.Id
+    | NotFound Request.Id String
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -33,6 +34,27 @@ init { client } =
     ( { client = Html.document Shared.text client.script }
     , Cmd.none
     )
+
+
+route : Result String Request -> Msg
+route result =
+    case result of
+        Ok request ->
+            case request.url of
+                "/" ->
+                    GetClient request.id
+
+                "/some" ->
+                    SomeData request.id
+
+                "/other" ->
+                    OtherData request.id
+
+                _ ->
+                    NotFound request.id request.url
+
+        Err reason ->
+            BadRequest
 
 
 update : Msg -> Model -> Cmd Msg
@@ -56,26 +78,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Request.listen
-        (\result ->
-            case result of
-                Ok request ->
-                    case request.url of
-                        "/" ->
-                            GetClient request.id
-
-                        "/some" ->
-                            SomeData request.id
-
-                        "/other" ->
-                            OtherData request.id
-
-                        _ ->
-                            NotFound request.id request.url
-
-                Err reason ->
-                    BadRequest
-        )
+    Request.listen route
 
 
 main : Program Flags Model Msg

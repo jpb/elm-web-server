@@ -1,6 +1,6 @@
 {
   "name": "elm-http-server",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "A puny module for putting together HTTP-servers using Elm",
   "main": "source/index.js",
   "scripts": {},

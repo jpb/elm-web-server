@@ -1,6 +1,9 @@
 # Elm Http Server
 A puny module for putting together HTTP-servers using Elm
 
+## Warning
+Elm (along with the Elm architecture) is designed for browser-applications; This project in experimental attempt to embed the architecture inside a small Node.js Http-server program. Taking the unreasonable performance implications aside, it is fun to experience Elm as a shared language between client and server with all of it's nice properties for continuous improvement and modification. Enjoy! :)
+
 ## Usage
 The module is distributed through NPM:
 
@@ -23,9 +26,6 @@ Examples of usage can be found in the `examples` sub-directory.
 - Utility-modules for working with Http-Request/Response on the server
 - Emulation for XmlHttpRequest to enable `elm-lang/http` to run on the server
 - A tiny API to hook Elm's `Platform.program` into `Http.createServer` in Node.JS
-
-## Warning
-Elm (along with the Elm architecture) is designed for browser-applications; This project in experimental attempt to embed the architecture inside a small Node.js Http-server program. Taking the unreasonable performance implications aside, it is fun to experience Elm as a shared language between client and server with all of it's nice properties for continuous improvement and modification. Enjoy! :)
 
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
@@ -55,7 +55,7 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
 
 ### Server.Request
     type alias Request =
-    { id : String
+    { id : Id
     , method : Method
     , headers : Dict String String
     , url : String
@@ -72,13 +72,13 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
     listen : (Result String Request -> msg) -> Sub msg
 
 ### Server.Response
-    html : String -> Status -> Server.Html.Document -> Response
+    html : Request.Id -> Status -> Server.Html.Document -> Response
 ###
-    text : String -> Status -> String -> Response
+    text : Request.Id -> Status -> String -> Response
 ###
-    json : String -> Status -> Json.Encode.Value -> Response
+    json : Request.Id -> Status -> Json.Encode.Value -> Response
 ###
-    empty : String -> Status -> Response
+    empty : Request.Id -> Status -> Response
 ###
     send : Response -> Cmd msg
 
