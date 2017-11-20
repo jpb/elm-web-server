@@ -18,6 +18,17 @@ var createRequestListener = function (worker, size) {
 
     var unresolved = {}
 
+    worker.ports.outgoing.subscribe(function (output) {
+
+        if (!unresolved[output.id]) return undefined
+
+        unresolved[output.id].writeHead(output.status.code, output.status.message, output.headers)
+
+        unresolved[output.id].end(output.body)
+
+        unresolved[output.id] = undefined
+    })
+
     return function (request, response) {
 
         Crypto.randomBytes(size, function (error, buffer) {
@@ -29,19 +40,11 @@ var createRequestListener = function (worker, size) {
             var body = []
 
             request
-                .on("data", function (chunk) { body.push(chunk) })
+                .on("data", function (chunk) {
+
+                    body.push(chunk)
+                })
                 .on("end", function () {
-
-                    worker.ports.outgoing.subscribe(function (output) {
-
-                        if (!unresolved[output.id]) return undefined
-
-                        unresolved[output.id].writeHead(output.status.code, output.status.message, output.headers)
-
-                        unresolved[output.id].end(output.body)
-
-                        unresolved[output.id] = undefined
-                    })
 
                     worker.ports.incoming.send({
                         id: id,
