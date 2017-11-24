@@ -1,15 +1,20 @@
-port module Server.Request exposing (Method(..), Id, encodeId, Request, listen)
+port module Server.Http.Request exposing (Id, Method(..), Request, compareId, encodeId, listen)
 
 import Dict exposing (Dict)
 import Json.Decode as D exposing (Decoder)
 import Json.Encode as E
 
 
-port incoming : (D.Value -> msg) -> Sub msg
+port incomingRequest : (D.Value -> msg) -> Sub msg
 
 
 type Id
     = Id String
+
+
+compareId : Id -> Id -> Bool
+compareId (Id a) (Id b) =
+    a == b
 
 
 encodeId : Id -> E.Value
@@ -60,10 +65,10 @@ decoder =
         (D.field "id" (D.map Id D.string))
         (D.field "method" (D.map toMethod D.string))
         (D.field "headers" (D.map Dict.fromList (D.keyValuePairs D.string)))
-        (D.field "url" (D.string))
+        (D.field "url" D.string)
         (D.field "body" (D.maybe D.string))
 
 
 listen : (Result String Request -> msg) -> Sub msg
 listen msg =
-    incoming (msg << D.decodeValue decoder)
+    incomingRequest (msg << D.decodeValue decoder)

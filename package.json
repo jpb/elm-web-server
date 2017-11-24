@@ -1,18 +1,19 @@
 {
-  "name": "elm-http-server",
-  "version": "10.0.0",
-  "description": "A puny module for putting together HTTP-servers using Elm",
+  "name": "elm-server",
+  "version": "1.0.0",
+  "description": "An API with Node.js-bindings for Elm WebSocket/HTTP servers",
   "main": "source/index.js",
   "scripts": {},
   "keywords": [
     "elm",
     "node",
     "http",
+    "ws",
     "server"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/opvasger/elm-http-server"
+    "url": "https://github.com/opvasger/elm-server"
   },
   "author": "asger nielsen <opvasger@gmail.com>",
   "license": "BSD-3-Clause",

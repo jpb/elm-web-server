@@ -1,4 +1,4 @@
-module Server.Response.Status exposing (Status, badRequest, internalError, notFound, ok, unauthorized)
+module Server.Http.Response.Status exposing (Status, badRequest, internalError, notFound, ok, unauthorized)
 
 
 type alias Status =

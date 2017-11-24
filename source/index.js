@@ -2,23 +2,20 @@ var Crypto = require("crypto")
 
 global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 
-var createRequestListener = function (worker, size) {
-
-    if (!size || typeof size !== "number")
-        throw Error("Invalid configuration - Ensure you have passed an integer as the 2nd argument to 'createRequestListener'.")
+var createRequestListener = function (worker) {
 
     if (!worker || !worker.ports)
         throw Error("Invalid configuration - Ensure you are passing an instantiated Elm-worker to 'createRequestListener'.")
 
-    if (!worker.ports.incoming)
+    if (!worker.ports.incomingRequest)
         throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Request-module.")
 
-    if (!worker.ports.outgoing)
+    if (!worker.ports.outgoingResponse)
         throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Response-module.")
 
     var unresolved = {}
 
-    worker.ports.outgoing.subscribe(function (output) {
+    worker.ports.outgoingResponse.subscribe(function (output) {
 
         if (!unresolved[output.id]) return undefined
 
@@ -26,14 +23,19 @@ var createRequestListener = function (worker, size) {
 
         unresolved[output.id].end(output.body)
 
-        unresolved[output.id] = undefined
+        delete unresolved[output.id]
     })
 
     return function (request, response) {
 
-        Crypto.randomBytes(size, function (error, buffer) {
+        Crypto.randomBytes(16, function (error, buffer) {
 
-            var id = Date.now() + buffer.toString("hex")
+            if(error) {
+                console.error(error)
+                return response.end()
+            }
+
+            var id = buffer.toString("hex")
 
             unresolved[id] = response
 
@@ -41,12 +43,15 @@ var createRequestListener = function (worker, size) {
 
             request
                 .on("data", function (chunk) {
-
                     body.push(chunk)
+                })
+                .on("error", function (error) {
+                    console.error(error)
+                    response.end()
                 })
                 .on("end", function () {
 
-                    worker.ports.incoming.send({
+                    worker.ports.incomingRequest.send({
                         id: id,
                         url: request.url,
                         method: request.method,
@@ -58,6 +63,86 @@ var createRequestListener = function (worker, size) {
     }
 }
 
+var attachMessageListener = function (worker, server) {
+
+    if (!worker || !worker.ports)
+        throw Error("Invalid configuration - Ensure you are passing an instantiated Elm-worker to 'attachMessageListener'.")
+
+    if (!worker.ports.incomingEvent)
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the Event-module.")
+
+    if (!worker.ports.outgoingEvent)
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the Event-module.")
+
+    var connections = {}
+
+    var dropDisconnected = function () {
+
+        Object.getOwnPropertyNames(connections).forEach(function (id) {
+
+            if(!connections[id].isAlive) {
+
+                worker.ports.incomingEvent.send({ disconnected: id })
+
+                connections[id].terminate()
+
+                delete connections[id]
+            } else {
+
+                connections[id].isAlive = false
+
+                connections[id].ping("", false, true)
+            }
+        })
+
+        setTimeout(dropDisconnected, 30000)
+    }
+
+    dropDisconnected()
+
+    server.on("connection", function (connection) {
+        
+        connection.isAlive = true
+
+        connection.on("pong", function () {
+            connection.isAlive = true
+        })
+
+        Crypto.randomBytes(16, function (error, buffer) {
+        
+            var id = buffer.toString("hex")
+
+            connections[id] = connection
+
+            worker.ports.incomingEvent.send({ connected: id })
+
+            connection.on("message", function (message) {
+
+                worker.ports.incomingEvent.send({ from: id, message: message })
+            })
+
+            connection.on("error", function (error) {
+
+                console.warn(error)
+                delete connections[id]
+            })
+
+            connection.on("close", function () {
+
+                delete connections[id]
+            })
+        })
+    })
+
+    worker.ports.outgoingEvent.subscribe(function (output) {
+
+        if (!connections[output.to]) return undefined
+
+        connections[output.to].send(output.message)
+    })
+}
+
 module.exports = {
-    createRequestListener: createRequestListener
+    createRequestListener: createRequestListener,
+    attachMessageListener: attachMessageListener
 }

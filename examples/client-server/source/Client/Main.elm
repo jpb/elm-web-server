@@ -1,16 +1,20 @@
 module Client.Main exposing (main)
 
 import Html exposing (Html)
-import Shared
 import Http
+import Shared
+import WebSocket
 
 
 type alias Model =
-    String
+    { data : String
+    , messages : List String
+    }
 
 
 type Msg
     = Data (Result Http.Error String)
+    | NewMessage String
 
 
 someDataRequest : Http.Request String
@@ -25,7 +29,9 @@ otherDataRequest =
 
 init : ( Model, Cmd Msg )
 init =
-    ( "loading"
+    ( { data = "loading"
+      , messages = []
+      }
     , Cmd.batch
         [ Http.send Data someDataRequest
         , Http.send Data otherDataRequest
@@ -39,22 +45,26 @@ update msg model =
         Data result ->
             case result of
                 Ok data ->
-                    ( data, Cmd.none )
+                    ( { model | data = data }, Cmd.none )
 
                 Err error ->
-                    ( toString error, Cmd.none )
+                    ( { model | data = toString error }, Cmd.none )
+
+        NewMessage message ->
+            ( { model | messages = message :: model.messages }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    WebSocket.listen "ws://localhost:3000" NewMessage
 
 
 view : Model -> Html Msg
 view model =
     Html.div []
         [ Html.div [] [ Html.text Shared.text ]
-        , Html.div [] [ Html.text model ]
+        , Html.div [] [ Html.text model.data ]
+        , Html.div [] (List.map (\data -> Html.div [] [ Html.text data ]) model.messages)
         ]
 
 

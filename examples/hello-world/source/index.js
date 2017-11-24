@@ -1,13 +1,16 @@
 var Http = require("http")
 var Ehs = require("./ehs.js")
 var App = require("./elm.js")
+var Ws = require("ws")
 
-var PORT = 3000
+var worker = App.Main.worker()
 
-var onRequest = Ehs.createRequestListener(App.Main.worker(), 10)
+var httpServer = Http.createServer(Ehs.createRequestListener(worker))
 
-var onListen = function () { console.log("listening at http://localhost:" + PORT) }
+Ehs.attachMessageListener(worker, new Ws.Server({
+    server: httpServer
+}))
 
-Http.createServer()
-.on("request", onRequest)
-.listen(PORT, onListen)
+httpServer.listen(3000, function () {
+    console.log("listening at http://localhost:3000 & ws://localhost:3000")
+})

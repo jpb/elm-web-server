@@ -1,7 +1,7 @@
 {
-    "version": "10.0.0",
-    "summary": "A puny module for putting together HTTP-servers using Elm",
-    "repository": "https://github.com/opvasger/elm-http-server.git",
+    "version": "1.0.0",
+    "summary": "An API with Node.js-bindings for Elm WebSocket/HTTP servers",
+    "repository": "https://github.com/opvasger/elm-server.git",
     "license": "BSD-3-Clause",
     "source-directories": [
         "source"

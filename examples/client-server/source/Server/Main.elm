@@ -2,11 +2,12 @@ module Server.Main exposing (main)
 
 import Platform
 import Server.Html as Html
-import Server.Request as Request exposing (Request, Method(..))
-import Server.Response as Response exposing (Response)
-import Server.Response.Status as Status
+import Server.Http.Request as Request exposing (Method(..), Request)
+import Server.Http.Response as Response exposing (Response)
+import Server.Http.Response.Status as Status
+import Server.WebSocket as WebSocket exposing (Event(..))
 import Shared
-import Server.Request as Request
+import Time
 
 
 type alias Flags =
@@ -18,26 +19,50 @@ type alias Flags =
 
 type alias Model =
     { client : Html.Document
+    , connections : List WebSocket.Id
     }
 
 
 type Msg
-    = BadRequest
+    = NoOp
     | GetClient Request.Id
     | SomeData Request.Id
     | OtherData Request.Id
     | NotFound Request.Id String
+    | GotConnection WebSocket.Id
+    | LostConnection WebSocket.Id
+    | SendMessage
 
 
 init : Flags -> ( Model, Cmd Msg )
 init { client } =
-    ( { client = Html.document Shared.text client.script }
+    ( { client = Html.document Shared.text client.script
+      , connections = []
+      }
     , Cmd.none
     )
 
 
-route : Result String Request -> Msg
-route result =
+routeEvent : Result String Event -> Msg
+routeEvent result =
+    case result of
+        Ok event ->
+            case event of
+                Connection id ->
+                    GotConnection id
+
+                Disconnection id ->
+                    LostConnection id
+
+                Message id message ->
+                    NoOp
+
+        Err reason ->
+            NoOp
+
+
+routeRequest : Result String Request -> Msg
+routeRequest result =
     case result of
         Ok request ->
             case request.url of
@@ -54,37 +79,50 @@ route result =
                     NotFound request.id request.url
 
         Err reason ->
-            BadRequest
+            NoOp
 
 
-update : Msg -> Model -> Cmd Msg
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        BadRequest ->
-            Cmd.none
+        NoOp ->
+            ( model, Cmd.none )
 
         NotFound id url ->
-            Response.send (Response.text id Status.notFound ("no route found for '" ++ url ++ "'"))
+            ( model, Response.send (Response.text id Status.notFound ("no route found for '" ++ url ++ "'")) )
 
         GetClient id ->
-            Response.send (Response.html id Status.ok model.client)
+            ( model, Response.send (Response.html id Status.ok model.client) )
 
         SomeData id ->
-            Response.send (Response.text id Status.ok "some data")
+            ( model, Response.send (Response.text id Status.ok "some data") )
 
         OtherData id ->
-            Response.send (Response.text id Status.ok "other data")
+            ( model, Response.send (Response.text id Status.ok "other data") )
+
+        GotConnection id ->
+            ( { model | connections = id :: model.connections }, Cmd.none )
+
+        LostConnection id ->
+            ( { model | connections = List.filter (not << WebSocket.compareId id) model.connections }, Cmd.none )
+
+        SendMessage ->
+            ( model, Cmd.batch (List.map (WebSocket.send "some data") model.connections) )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Request.listen route
+    Sub.batch
+        [ Request.listen routeRequest
+        , WebSocket.listen routeEvent
+        , Time.every 1000 (\_ -> SendMessage)
+        ]
 
 
 main : Program Flags Model Msg
 main =
     Platform.programWithFlags
         { init = init
-        , update = \msg model -> ( model, update msg model )
+        , update = update
         , subscriptions = subscriptions
         }

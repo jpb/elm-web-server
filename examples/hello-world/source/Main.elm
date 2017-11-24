@@ -1,14 +1,16 @@
 module Main exposing (main)
 
 import Platform
-import Server.Request as Request exposing (Request)
-import Server.Response as Response exposing (Response)
-import Server.Response.Status as Status
+import Server.Http.Request as Request exposing (Request)
+import Server.Http.Response as Response exposing (Response)
+import Server.Http.Response.Status as Status
+import Server.WebSocket as WebSocket
 
 
 type Msg
-    = BadRequest
-    | GoodRequest Request.Id
+    = NoOp
+    | NewRequest Request.Id
+    | NewEvent WebSocket.Id
 
 
 init =
@@ -21,23 +23,39 @@ helloResponse id =
 
 update msg _ =
     case msg of
-        GoodRequest id ->
+        NewRequest id ->
             ( (), Response.send (helloResponse id) )
 
-        BadRequest ->
+        NewEvent id ->
+            ( ()
+            , WebSocket.send "Hello World" id
+            )
+
+        NoOp ->
             ( (), Cmd.none )
 
 
 subscriptions _ =
-    Request.listen
-        (\incoming ->
-            case incoming of
-                Ok request ->
-                    GoodRequest request.id
+    Sub.batch
+        [ Request.listen
+            (\incoming ->
+                case incoming of
+                    Ok request ->
+                        NewRequest request.id
 
-                _ ->
-                    BadRequest
-        )
+                    _ ->
+                        NoOp
+            )
+        , WebSocket.listen
+            (\incoming ->
+                case incoming of
+                    Ok (WebSocket.Message id message) ->
+                        Debug.log message (NewEvent id)
+
+                    event ->
+                        Debug.log (toString event) NoOp
+            )
+        ]
 
 
 main =

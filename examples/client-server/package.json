@@ -16,5 +16,8 @@
     "nodemon": "1.12.1",
     "webpack": "3.6.0",
     "xhr2": "0.1.4"
+  },
+  "dependencies": {
+    "ws": "^3.3.2"
   }
 }

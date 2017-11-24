@@ -1,14 +1,14 @@
-port module Server.Response exposing (Response, html, json, empty, send, text)
+port module Server.Http.Response exposing (Response, empty, html, json, send, text)
 
 import Dict exposing (Dict)
 import Json.Encode as E
 import Server.Html as Html
-import Server.Response.Header as Header exposing (Header)
-import Server.Response.Status as Status exposing (Status)
-import Server.Request as Request
+import Server.Http.Request as Request
+import Server.Http.Response.Header as Header exposing (Header)
+import Server.Http.Response.Status as Status exposing (Status)
 
 
-port outgoing : E.Value -> Cmd msg
+port outgoingResponse : E.Value -> Cmd msg
 
 
 type Response
@@ -77,4 +77,4 @@ encode (Response { id, status, headers, body }) =
 
 send : Response -> Cmd msg
 send response =
-    (outgoing << encode) response
+    (outgoingResponse << encode) response

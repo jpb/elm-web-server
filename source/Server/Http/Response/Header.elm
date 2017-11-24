@@ -1,4 +1,4 @@
-module Server.Response.Header exposing (Header, contentType, htmlContent, jsonContent, textContent)
+module Server.Http.Response.Header exposing (Header, contentType, htmlContent, jsonContent, textContent)
 
 
 type alias Header =
