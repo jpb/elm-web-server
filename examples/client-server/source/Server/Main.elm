@@ -123,7 +123,7 @@ subscriptions model =
     Sub.batch
         [ Request.listen routeRequest
         , WebSocket.listen routeEvent
-        , Time.every 10 (\_ -> SendMessage)
+        , Time.every 1000 (\_ -> SendMessage)
         ]
 
 
