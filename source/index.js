@@ -105,13 +105,10 @@ var attachMessageListener = function (worker, server) {
         if (!connections[output.to])
             return console.warn("no connection with id: " + output.to)
         
-        if (connections[output.to].readyState !== 1)
-            return console.warn("the connection with id: " + output.to + " isn't open yet")
-        
         connections[output.to].send(output.message, function (error) {
         
             if (error)
-                console.warn("wat")
+                console.warn(error)
         })
     })
 
@@ -128,7 +125,7 @@ var attachMessageListener = function (worker, server) {
             var id = buffer.toString("hex")
 
             connections[id] = connection
-
+            
             worker.ports.incomingEvent.send({ connected: id })
 
             connection.on("message", function (message) {

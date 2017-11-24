@@ -101,9 +101,17 @@ update msg model =
             ( model, Response.send (Response.text id Status.ok "other data") )
 
         GotConnection id ->
+            let
+                test =
+                    Debug.log (toString (List.length model.connections + 1)) id
+            in
             ( { model | connections = id :: model.connections }, Cmd.none )
 
         LostConnection id ->
+            let
+                test =
+                    Debug.log (toString (List.length model.connections - 1)) id
+            in
             ( { model | connections = List.filter (not << WebSocket.compareId id) model.connections }, Cmd.none )
 
         SendMessage ->
@@ -115,7 +123,7 @@ subscriptions model =
     Sub.batch
         [ Request.listen routeRequest
         , WebSocket.listen routeEvent
-        , Time.every 1000 (\_ -> SendMessage)
+        , Time.every 10 (\_ -> SendMessage)
         ]
 
 
