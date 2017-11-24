@@ -1,6 +1,5 @@
-var Crypto = require("crypto")
-
 global.XMLHttpRequest = require("xhr2").XMLHttpRequest
+var Crypto = require("crypto")
 
 var createRequestListener = function (worker) {
 
@@ -17,7 +16,8 @@ var createRequestListener = function (worker) {
 
     worker.ports.outgoingResponse.subscribe(function (output) {
 
-        if (!unresolved[output.id]) return undefined
+        if (!unresolved[output.id])
+            return console.warn("no unresolved request with id: " + id)
 
         unresolved[output.id].writeHead(output.status.code, output.status.message, output.headers)
 
@@ -72,7 +72,7 @@ var attachMessageListener = function (worker, server) {
         throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the Event-module.")
 
     if (!worker.ports.outgoingEvent)
-        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the Event-module.")
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the WebSocket-module.")
 
     var connections = {}
 
@@ -100,6 +100,21 @@ var attachMessageListener = function (worker, server) {
 
     dropDisconnected()
 
+    worker.ports.outgoingEvent.subscribe(function (output) {
+        
+        if (!connections[output.to])
+            return console.warn("no connection with id: " + output.to)
+        
+        if (connections[output.to].readyState !== 1)
+            return console.warn("the connection with id: " + output.to + " isn't open yet")
+        
+        connections[output.to].send(output.message, function (error) {
+        
+            if (error)
+                console.warn("wat")
+        })
+    })
+
     server.on("connection", function (connection) {
         
         connection.isAlive = true
@@ -120,25 +135,25 @@ var attachMessageListener = function (worker, server) {
 
                 worker.ports.incomingEvent.send({ from: id, message: message })
             })
-
+            
             connection.on("error", function (error) {
 
                 console.warn(error)
+
+                worker.ports.incomingEvent.send({ disconnected: id })
+
+                connections[id].terminate()
+
                 delete connections[id]
             })
 
             connection.on("close", function () {
 
+                worker.ports.incomingEvent.send({ disconnected: id })
+
                 delete connections[id]
             })
         })
-    })
-
-    worker.ports.outgoingEvent.subscribe(function (output) {
-
-        if (!connections[output.to]) return undefined
-
-        connections[output.to].send(output.message)
     })
 }
 

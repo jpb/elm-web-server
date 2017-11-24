@@ -20,7 +20,7 @@ type Id
 
 
 type Event
-    = Message Id String
+    = Message Id D.Value
     | Connection Id
     | Disconnection Id
 
@@ -31,7 +31,7 @@ eventDecoder =
         [ D.map2
             Message
             (D.field "from" (D.map Id D.string))
-            (D.field "message" D.string)
+            (D.field "message" D.value)
         , D.map
             Connection
             (D.field "connected" (D.map Id D.string))

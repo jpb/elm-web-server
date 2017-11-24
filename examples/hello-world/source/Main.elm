@@ -50,7 +50,7 @@ subscriptions _ =
             (\incoming ->
                 case incoming of
                     Ok (WebSocket.Message id message) ->
-                        Debug.log message (NewEvent id)
+                        Debug.log (toString message) (NewEvent id)
 
                     event ->
                         Debug.log (toString event) NoOp
