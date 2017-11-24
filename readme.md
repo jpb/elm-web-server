@@ -1,4 +1,4 @@
-# Elm Server
+# Elm Web Server
 An API with Node.js-bindings for Elm WebSocket/HTTP servers
 
 ## Warning
@@ -7,7 +7,7 @@ Elm (along with the Elm architecture) is designed for browser-applications; This
 ## Usage
 The module is distributed through NPM:
 
-    npm install -S elm-server
+    npm install -S elm-web-server
 
 if you're going to use the `Server.WebSocket`-module, you should install the following modules from npm:
 
@@ -20,7 +20,7 @@ Go to `elm-package.json` and expose the internal Elm-code from the module:
     ...
     "source-directories": [
         ...
-        "node_modules/elm-server/source"
+        "node_modules/elm-web-server/source"
     ]
 }
 ```
@@ -35,7 +35,7 @@ Examples of usage can be found in the `examples` sub-directory.
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
 ```javascript
-var Ehs = require("elm-server")
+var Ehs = require("elm-web-server")
 var Http = require("http")
 var Ws = require("ws")
 var App = require("./main.elm.js")
@@ -52,7 +52,7 @@ httpServer.listen(3000, function () {
     console.log("listening at localhost:3000")
 })
 ```
-Importing `elm-server` automatically exposes `XmlHttpRequest` globally to enable usage of `elm-lang/http` in the Elm-modules on the server.
+Importing `elm-web-server` automatically exposes `XmlHttpRequest` globally to enable usage of `elm-lang/http` in the Elm-modules on the server.
 
 ## Elm Interface
 There is a couple of tiny modules for Elm, written to facilitate some basic server-logic.
