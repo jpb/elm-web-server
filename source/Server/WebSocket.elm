@@ -1,13 +1,21 @@
-port module Server.WebSocket exposing (Event(..), Id, compareId, listen, send)
+port module Server.WebSocket exposing (Id, Msg(..), compareId, disconnect, listen, send)
 
 import Json.Decode as D exposing (Decoder)
 import Json.Encode as E
 
 
-port incomingEvent : (D.Value -> msg) -> Sub msg
+port websocketIn : (D.Value -> msg) -> Sub msg
 
 
-port outgoingEvent : E.Value -> Cmd msg
+port websocketOut : E.Value -> Cmd msg
+
+
+
+-- Id
+
+
+type Id
+    = Id String
 
 
 compareId : Id -> Id -> Bool
@@ -15,28 +23,28 @@ compareId (Id a) (Id b) =
     a == b
 
 
-type Id
-    = Id String
+
+-- Msg
 
 
-type Event
-    = Message Id D.Value
-    | Connection Id
-    | Disconnection Id
+type Msg
+    = Connected Id
+    | Disconnected Id
+    | Message Id String
 
 
-eventDecoder : Decoder Event
-eventDecoder =
+decoder : Decoder Msg
+decoder =
     D.oneOf
         [ D.map2
             Message
             (D.field "from" (D.map Id D.string))
-            (D.field "message" D.value)
+            (D.field "message" D.string)
         , D.map
-            Connection
+            Connected
             (D.field "connected" (D.map Id D.string))
         , D.map
-            Disconnection
+            Disconnected
             (D.field "disconnected" (D.map Id D.string))
         ]
 
@@ -49,11 +57,23 @@ encodeMessage message (Id id) =
         ]
 
 
-listen : (Result String Event -> msg) -> Sub msg
+encodeDisconnection : Id -> E.Value
+encodeDisconnection (Id id) =
+    E.object
+        [ ( "disconnect", E.string id )
+        ]
+
+
+listen : (Result String Msg -> msg) -> Sub msg
 listen msg =
-    incomingEvent (msg << D.decodeValue eventDecoder)
+    websocketIn (msg << D.decodeValue decoder)
 
 
 send : String -> Id -> Cmd msg
 send message id =
-    (outgoingEvent << encodeMessage message) id
+    (websocketOut << encodeMessage message) id
+
+
+disconnect : Id -> Cmd msg
+disconnect id =
+    (websocketOut << encodeDisconnection) id

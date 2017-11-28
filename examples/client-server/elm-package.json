@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "An example of sharing elm code between client and server",
-    "repository": "https://github.com/opvasger/elm-node.git",
+    "repository": "https://github.com/opvasger/elm-web-server.git",
     "license": "BSD3",
     "source-directories": [
         "source",

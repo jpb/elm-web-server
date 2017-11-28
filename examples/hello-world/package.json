@@ -1,10 +1,10 @@
 {
   "name": "hello-world",
   "version": "1.0.0",
-  "description": "An example of using elm-node's HTTP functionality",
+  "description": "An example of using elm-web-server's HTTP functionality",
   "scripts": {
     "start": "node build/index.js",
-    "build": "cp source/index.js build/index.js && cp ../../source/index.js build/ehs.js && elm-make source/Main.elm --output build/elm.js",
+    "build": "cp source/index.js build/index.js && cp ../../source/index.js build/ews.js && elm-make source/Main.elm --output build/elm.js",
     "setup": "rm -rf build elm-stuff node_modules && npm i -y && elm-package install -y && mkdir build && npm run build"
   },
   "keywords": [],

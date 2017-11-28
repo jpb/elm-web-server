@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "summary": "An API with Node.js-bindings for Elm WebSocket/HTTP servers",
     "repository": "https://github.com/opvasger/elm-web-server.git",
     "license": "BSD-3-Clause",

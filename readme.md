@@ -35,16 +35,16 @@ Examples of usage can be found in the `examples` sub-directory.
 ## JavaScript Interface
 in Node.js, assuming an Elm module named `Main` compiled to `main.elm.js` in the same directory, the API can be used as such:
 ```javascript
-var Ehs = require("elm-web-server")
+var Ews = require("elm-web-server")
 var Http = require("http")
 var Ws = require("ws")
 var App = require("./main.elm.js")
 
 var worker = App.Main.worker()
 
-var httpServer = Http.createServer(Ehs.createRequestListener(worker))
+var httpServer = Http.createServer(Ews.createRequestListener(worker))
 
-Ehs.attachMessageListener(worker, new Ws.Server({
+Ews.attachMessageListener(worker, new Ws.Server({
     server: httpServer
 }))
 
@@ -59,8 +59,6 @@ There is a couple of tiny modules for Elm, written to facilitate some basic serv
 
 ### Server.Http
 The HTTP modules exposes utility for dealing with HTTP requests and responses
-
-#### Server.Http.Request
 
 ```elm
 type alias Request =
@@ -86,57 +84,24 @@ listen : (Result String Request -> msg) -> Sub msg
 ```
 
 ```elm
-encodeId : Request.Id -> E.Value
+htmlResponse : Status -> Html.Document -> Id -> Response
 ```
 
 ```elm
-compareId : Request.Id -> Request.Id -> Bool
-```
-#### Server.Http.Response
-
-```elm
-html : Request.Id -> Status -> Server.Html.Document -> Response
+textResponse : Status -> String -> Id -> Response
 ```
 
 ```elm
-text : Request.Id -> Status -> String -> Response
+jsonResponse : Status -> E.Value -> Id -> Response
 ```
 
 ```elm
-json : Request.Id -> Status -> Json.Encode.Value -> Response
-```
-
-```elm
-empty : Request.Id -> Status -> Response
+emptyResponse : Status -> Id -> Response
 ```
 
 ```elm
 send : Response -> Cmd msg
 ```
-
-#### Server.Http.Response.Header
-
-```elm
-type alias Header = ( String, String )
-```
-
-```elm
-contentType : String -> Header
-```
-
-```elm
-textContent : Header
-```
-
-```elm
-htmlContent : Header
-```
-
-```elm
-jsonContent : Header
-```
-
-#### Server.Http.Response.Status
 
 ```elm
 type alias Status =
@@ -146,45 +111,49 @@ type alias Status =
 ```
 
 ```elm
-ok : Status
+okStatus : Status
 ```
 
 ```elm
-badRequest : Status
+badRequestStatus : Status
 ```
 
 ```elm
-unauthorized : Status
+unauthorizedStatus : Status
 ```
 
 ```elm
-notFound : Status
+notFoundStatus : Status
 ```
 
 ```elm
-internalError : Status
+internalErrorStatus : Status
 ```
 
 ### Server.WebSocket
 The HTTP modules exposes utility for dealing with WebSocket connections & messages
 
 ```elm
-type Event
-= Message       WebSocket.Id    D.Value
-| Connection    WebSocket.Id
-| Disconnection WebSocket.Id
+type Msg
+    = Connected Id
+    | Disconnected Id
+    | Message Id String
 ```
 
 ```elm
-listen : (Result String WebSocket.Event -> msg) -> Sub msg
+listen : (Result String Msg -> msg) -> Sub msg
 ```
 
 ```elm
-send : String -> WebSocket.Id -> Cmd msg
+send : String -> Id -> Cmd msg
 ```
 
 ```elm
-compareId : WebSocket.Id -> WebSocket.Id -> Bool
+compareId : Id -> Id -> Bool
+```
+
+```elm
+disconnect : Id -> Cmd msg
 ```
 
 ### Server.Html

@@ -1,13 +1,13 @@
 var Http = require("http")
-var Ehs = require("./ehs.js")
+var Ews = require("./ews.js")
 var App = require("./elm.js")
 var Ws = require("ws")
 
 var worker = App.Main.worker()
 
-var httpServer = Http.createServer(Ehs.createRequestListener(worker))
+var httpServer = Http.createServer(Ews.createRequestListener(worker))
 
-Ehs.attachMessageListener(worker, new Ws.Server({
+Ews.attachMessageListener(worker, new Ws.Server({
     server: httpServer
 }))
 

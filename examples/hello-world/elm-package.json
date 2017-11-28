@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "An example of using elm-node's HTTP functionality",
-    "repository": "https://github.com/opvasger/elm-node.git",
+    "summary": "An example of using elm-web-server's HTTP functionality",
+    "repository": "https://github.com/opvasger/elm-web-server.git",
     "license": "BSD3",
     "source-directories": [
         "source",

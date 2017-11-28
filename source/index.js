@@ -1,23 +1,21 @@
-global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 var Crypto = require("crypto")
+
+global.XMLHttpRequest = require("xhr2").XMLHttpRequest
 
 var createRequestListener = function (worker) {
 
     if (!worker || !worker.ports)
         throw Error("Invalid configuration - Ensure you are passing an instantiated Elm-worker to 'createRequestListener'.")
 
-    if (!worker.ports.incomingRequest)
-        throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Request-module.")
-
-    if (!worker.ports.outgoingResponse)
-        throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the Response-module.")
+    if (!worker.ports.httpIn || !worker.ports.httpOut)
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'createRequestListener' is utilizing the 'Server.Http'-module.")
 
     var unresolved = {}
 
-    worker.ports.outgoingResponse.subscribe(function (output) {
+    worker.ports.httpOut.subscribe(function (output) {
 
         if (!unresolved[output.id])
-            return console.warn("no unresolved request with id: " + id)
+            return console.error("no unresolved request with id: " + id)
 
         unresolved[output.id].writeHead(output.status.code, output.status.message, output.headers)
 
@@ -51,7 +49,7 @@ var createRequestListener = function (worker) {
                 })
                 .on("end", function () {
 
-                    worker.ports.incomingRequest.send({
+                    worker.ports.httpIn.send({
                         id: id,
                         url: request.url,
                         method: request.method,
@@ -68,11 +66,8 @@ var attachMessageListener = function (worker, server) {
     if (!worker || !worker.ports)
         throw Error("Invalid configuration - Ensure you are passing an instantiated Elm-worker to 'attachMessageListener'.")
 
-    if (!worker.ports.incomingEvent)
-        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the Event-module.")
-
-    if (!worker.ports.outgoingEvent)
-        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the WebSocket-module.")
+    if (!worker.ports.websocketIn || !worker.ports.websocketOut)
+        throw Error("Invalid configuration - Ensure the worker you are passing to 'attachMessageListener' is utilizing the 'Server.WebSocket'-module.")
 
     var connections = {}
 
@@ -82,7 +77,7 @@ var attachMessageListener = function (worker, server) {
 
             if(!connections[id].isAlive) {
 
-                worker.ports.incomingEvent.send({ disconnected: id })
+                worker.ports.websocketIn.send({ disconnected: id })
 
                 connections[id].terminate()
 
@@ -100,16 +95,32 @@ var attachMessageListener = function (worker, server) {
 
     dropDisconnected()
 
-    worker.ports.outgoingEvent.subscribe(function (output) {
+    worker.ports.websocketOut.subscribe(function (output) {
+
+        if (output.to && output.message) {
         
-        if (!connections[output.to])
-            return console.warn("no connection with id: " + output.to)
-        
-        connections[output.to].send(output.message, function (error) {
-        
-            if (error)
-                console.warn(error)
-        })
+            if (!connections[output.to])
+                return console.error("no connection with id: " + output.to)
+            
+            connections[output.to].send(output.message, function (error) {
+            
+                if (error)
+                    console.error(error)
+            })
+        } else if (output.diconnect) {
+
+            if (!connections[output.disconnect])
+                return console.error("no connection with id: " + output.disconnect)
+
+            worker.ports.websocketIn.send({ disconnected: output.disconnect })
+                
+            connections[output.disconnect].terminate()
+            
+            delete connections[output.disconnect]
+        } else {
+
+            console.error("message not recognized: " + output)
+        }
     })
 
     server.on("connection", function (connection) {
@@ -126,18 +137,18 @@ var attachMessageListener = function (worker, server) {
 
             connections[id] = connection
             
-            worker.ports.incomingEvent.send({ connected: id })
+            worker.ports.websocketIn.send({ connected: id })
 
             connection.on("message", function (message) {
 
-                worker.ports.incomingEvent.send({ from: id, message: message })
+                worker.ports.websocketIn.send({ from: id, message: message })
             })
             
             connection.on("error", function (error) {
 
-                console.warn(error)
+                console.error(error)
 
-                worker.ports.incomingEvent.send({ disconnected: id })
+                worker.ports.websocketIn.send({ disconnected: id })
 
                 connections[id].terminate()
 
@@ -146,7 +157,7 @@ var attachMessageListener = function (worker, server) {
 
             connection.on("close", function () {
 
-                worker.ports.incomingEvent.send({ disconnected: id })
+                worker.ports.websocketIn.send({ disconnected: id })
 
                 delete connections[id]
             })
