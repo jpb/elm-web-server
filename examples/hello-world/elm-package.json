@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "An example of using elm-web-server's functionality",
+    "summary": "A minimal example of using elm-web-server",
     "repository": "https://github.com/opvasger/elm-web-server.git",
     "license": "BSD3",
     "source-directories": [

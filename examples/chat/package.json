@@ -1,7 +1,7 @@
 {
-  "name": "client-server",
+  "name": "chat",
   "version": "1.0.0",
-  "description": "An example of sharing elm code between client & server",
+  "description": "An example of a simple live chat using elm-web-server",
   "scripts": {
     "start": "node build/server.js",
     "build": "webpack -p --progress",
