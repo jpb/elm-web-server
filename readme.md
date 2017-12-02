@@ -58,7 +58,7 @@ Importing `elm-web-server` automatically exposes `XmlHttpRequest` globally to en
 There is a couple of tiny modules for Elm, written to facilitate some basic server-logic.
 
 ### Server.Http
-The HTTP modules exposes utility for dealing with HTTP requests and responses
+The HTTP module exposes utility for dealing with HTTP requests and responses
 
 ```elm
 type alias Request =
@@ -131,7 +131,7 @@ internalErrorStatus : Status
 ```
 
 ### Server.WebSocket
-The HTTP modules exposes utility for dealing with WebSocket connections & messages
+The WebSocket module exposes utility for dealing with WebSocket connections & messages
 
 ```elm
 type Msg
