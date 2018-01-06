@@ -1,4 +1,4 @@
-module Server.Html exposing (Document, document, toString)
+module Server.Html exposing (Document(..), document, toString)
 
 
 type Document
